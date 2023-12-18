@@ -71,5 +71,3 @@ export function deleteTask(id) {
   tasks.splice(tasks.indexOf(taskInDb), 1);
   return taskInDb;
 }
-
-export default tasks;
