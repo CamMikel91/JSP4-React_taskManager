@@ -42,7 +42,6 @@ const tasks = [
 ];
 
 export function getTasks() {
-  console.log(tasks);
   return tasks;
 }
 
