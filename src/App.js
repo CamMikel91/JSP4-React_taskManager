@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { getTasks } from "./fakeTaskService-1";
+import TaskList from "./components/common/taskList";
 import "./App.css";
-import CompletedBtn from "./components/common/completedBtn";
 import "bootstrap/dist/css/bootstrap.css";
 
 class App extends Component {
@@ -19,24 +19,7 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
-        <h1 className="text-center">Task Manager</h1>
-        <ul className="list-unstyled">
-          {this.state.tasks.map((task) => (
-            <li key={task._id}>
-              <strong>Task ID</strong>: {task._id} <br />
-              <strong>Title:</strong> {task.title} <br />
-              <strong>Task:</strong> {task.task} <br />
-              <strong>Category:</strong> {task.category} <br />
-              <strong>Severity:</strong> {task.severity.name} <br />
-              <CompletedBtn
-                completed={task.completed}
-                onClick={() => this.handleComplete(task)}
-              />
-            </li>
-          ))}
-        </ul>
-      </div>
+      <TaskList tasks={this.state.tasks} onCompleted={this.handleComplete} />
     );
   }
 }
