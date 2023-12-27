@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { getTasks } from "./fakeTaskService-1";
-import TaskList from "./components/common/taskList";
+import TaskList from "./components/taskList";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.css";
 

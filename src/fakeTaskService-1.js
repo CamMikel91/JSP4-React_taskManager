@@ -39,6 +39,46 @@ const tasks = [
     severity: { _id: "61b017eb0cce782d386e7371", name: "Very Important" },
     completed: false,
   },
+  {
+    _id: "618c3474eddf61c496096581",
+    title: "Test",
+    task: "Test",
+    category: "Home",
+    severity: { _id: "61b017eb0cce782d386e7371", name: "Very Important" },
+    completed: false,
+  },
+  {
+    _id: "618c3474eddf61c496096582",
+    title: "Test",
+    task: "Test",
+    category: "Home",
+    severity: { _id: "61b017eb0cce782d386e7371", name: "Very Important" },
+    completed: false,
+  },
+  {
+    _id: "618c3474eddf61c496096583",
+    title: "Test",
+    task: "Test",
+    category: "Home",
+    severity: { _id: "61b017eb0cce782d386e7371", name: "Very Important" },
+    completed: false,
+  },
+  {
+    _id: "618c3474eddf61c496096584",
+    title: "Test",
+    task: "Test",
+    category: "Home",
+    severity: { _id: "61b017eb0cce782d386e7371", name: "Very Important" },
+    completed: false,
+  },
+  {
+    _id: "618c3474eddf61c496096585",
+    title: "Test",
+    task: "Test",
+    category: "Home",
+    severity: { _id: "61b017eb0cce782d386e7371", name: "Very Important" },
+    completed: false,
+  },
 ];
 
 export function getTasks() {
