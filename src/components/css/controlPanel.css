@@ -1,0 +1,13 @@
+.controlPanel {
+  color: white;
+  background-color: rgb(0, 24, 34);
+  border-right: 1px solid black;
+  height: 100vh;
+}
+
+.card .card-header {
+  background-color: rgb(0, 78, 109);
+  color: white;
+  text-align: center;
+  text-shadow: 2px 2px 5px black;
+}

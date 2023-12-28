@@ -6,8 +6,12 @@ import "bootstrap/dist/css/bootstrap.css";
 
 class App extends Component {
   state = {
-    tasks: getTasks(),
+    tasks: [],
   };
+
+  componentDidMount() {
+    this.setState({ tasks: getTasks() });
+  }
 
   handleComplete = (task) => {
     const tasks = [...this.state.tasks];

@@ -14,7 +14,7 @@ class CompletedBtn extends Component {
       classes += " btn-warning";
       return (
         <button className={classes} onClick={this.props.onClick}>
-          Pending
+          Incomplete
         </button>
       );
     }
