@@ -1,6 +1,7 @@
 import React, { Component } from "react";
+import _ from "lodash";
 import ControlPanel from "./controlPanel";
-import CompletedBtn from "./common/completedBtn";
+import TaskTable from "./taskTable";
 import Pagination from "./pagination";
 import { paginate } from "../utils/paginate";
 import "./css/taskList.css";
@@ -14,6 +15,7 @@ class TaskList extends Component {
       severity: "all",
       category: "all",
     },
+    sortColumn: { path: "title", order: "asc" },
   };
 
   // handler for filtering tasks
@@ -28,8 +30,13 @@ class TaskList extends Component {
     this.setState({ currentPage: page });
   };
 
+  handleSort = (sortColumn) => {
+    this.setState({ sortColumn });
+  };
+
   render() {
-    const { pageSize, currentPage } = this.state;
+    const { pageSize, currentPage, sortColumn } = this.state;
+    const { onCompleted } = this.props;
 
     // filter tasks by status, severity, and category
     const filtered = this.props.tasks.filter((task) => {
@@ -104,8 +111,11 @@ class TaskList extends Component {
       }
     });
 
+    // sort tasks by column
+    const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
+
     // paginate filtered tasks
-    const tasks = paginate(filtered, currentPage, pageSize);
+    const tasks = paginate(sorted, currentPage, pageSize);
 
     // if there are no tasks, display a message
     if (tasks.length === 0)
@@ -135,35 +145,13 @@ class TaskList extends Component {
         <div className="col-9">
           <div className="taskManager">
             <h1 className="text-center">Task Manager</h1>
-            <div className="table-responsive px-2">
-              <table className="table table-dark table-hover">
-                <thead>
-                  <tr>
-                    <th>Title</th>
-                    <th>Task</th>
-                    <th>Category</th>
-                    <th>Severity</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tasks.map((task) => (
-                    <tr key={task._id}>
-                      <td>{task.title}</td>
-                      <td>{task.task}</td>
-                      <td>{task.category}</td>
-                      <td>{task.severity.name}</td>
-                      <td>
-                        <CompletedBtn
-                          completed={task.completed}
-                          onClick={() => this.props.onCompleted(task)}
-                        />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <TaskTable
+              tasks={tasks}
+              sortColumn={sortColumn}
+              onSort={this.handleSort}
+              onCompleted={onCompleted}
+            />
+
             <Pagination
               itemsCount={filtered.length}
               pageSize={pageSize}

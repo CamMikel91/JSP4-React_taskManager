@@ -1,9 +1,7 @@
 import React from "react";
 import "./css/controlPanel.css";
 
-const ControlPanel = (props) => {
-  const { onFilter } = props;
-
+const ControlPanel = ({ onFilter }) => {
   return (
     <div className="container controlPanel pt-3">
       <div className="card filters">
