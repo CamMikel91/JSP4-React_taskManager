@@ -1,5 +1,8 @@
 import React, { Component } from "react";
+import { Route, Switch } from "react-router-dom";
 import { getTasks } from "./fakeTaskService-1";
+import NavBar from "./components/common/navbar";
+import Home from "./components/home";
 import TaskList from "./components/taskList";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.css";
@@ -23,7 +26,23 @@ class App extends Component {
 
   render() {
     return (
-      <TaskList tasks={this.state.tasks} onCompleted={this.handleComplete} />
+      <div>
+        <NavBar />
+        <div className="content">
+          <Switch>
+            <Route
+              path="/tasks"
+              render={() => (
+                <TaskList
+                  tasks={this.state.tasks}
+                  onCompleted={this.handleComplete}
+                />
+              )}
+            />
+            <Route path="/" render={() => <Home />} />
+          </Switch>
+        </div>
+      </div>
     );
   }
 }
