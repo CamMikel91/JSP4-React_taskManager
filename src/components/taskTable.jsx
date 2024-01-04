@@ -15,7 +15,10 @@ class TaskTable extends Component {
       content: (task) => (
         <CompletedBtn
           completed={task.completed}
-          onClick={() => this.props.onCompleted(task)}
+          onClick={(e) => {
+            e.stopPropagation();
+            this.props.onCompleted(task);
+          }}
         />
       ),
     },
@@ -30,6 +33,7 @@ class TaskTable extends Component {
           data={tasks}
           sortColumn={sortColumn}
           onSort={onSort}
+          routeBase={"tasks"}
         />
       </div>
     );

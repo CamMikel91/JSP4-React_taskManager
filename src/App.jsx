@@ -1,11 +1,16 @@
 import React, { Component } from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
 import { getTasks } from "./fakeTaskService-1";
 import NavBar from "./components/common/navbar";
 import Home from "./components/home";
 import TaskList from "./components/taskList";
-import "./App.css";
+import TaskDetails from "./components/taskDetails";
+import NotFound from "./components/notFound";
+import AdminDashboard from "./components/adminDashboard";
+import Login from "./components/login";
+import UserDashboard from "./components/userDashboard";
 import "bootstrap/dist/css/bootstrap.css";
+import "./App.css";
 
 class App extends Component {
   state = {
@@ -30,16 +35,23 @@ class App extends Component {
         <NavBar />
         <div className="content">
           <Switch>
+            <Route path={"/tasks/:_id/:title"} component={TaskDetails} />
             <Route
               path="/tasks"
-              render={() => (
+              render={(props) => (
                 <TaskList
                   tasks={this.state.tasks}
                   onCompleted={this.handleComplete}
+                  {...props}
                 />
               )}
             />
-            <Route path="/" render={() => <Home />} />
+            <Route path={"/login"} component={Login} />
+            <Route path={"/adminDashboard"} component={AdminDashboard} />
+            <Route path={"/userDashboard"} component={UserDashboard} />
+            <Route path={"/not-found"} component={NotFound} />
+            <Route exact path="/" component={Home} />
+            <Redirect to={"/not-found"} />
           </Switch>
         </div>
       </div>

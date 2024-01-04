@@ -1,32 +1,36 @@
-import React, { Component } from "react";
+import React from "react";
 import _ from "lodash";
+import { useHistory } from "react-router-dom";
 
-class TableBody extends Component {
-  renderCell = (item, column) => {
+const TableBody = (props) => {
+  const { data, columns, routeBase } = props;
+
+  const renderCell = (item, column) => {
     if (column.content) return column.content(item);
     return _.get(item, column.path);
   };
 
-  createKey = (item, column) => {
+  const createKey = (item, column) => {
     return item._id + (column.path || column.key);
   };
 
-  render() {
-    const { data, columns } = this.props;
-    return (
-      <tbody>
-        {data.map((item) => (
-          <tr key={item._id}>
-            {columns.map((column) => (
-              <td key={this.createKey(item, column)}>
-                {this.renderCell(item, column)}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    );
-  }
-}
+  const history = useHistory();
+
+  const handleRowClick = (item) => {
+    history.push(`/${routeBase}/${item._id}/${item.title}`);
+  };
+
+  return (
+    <tbody>
+      {data.map((item) => (
+        <tr key={item._id} onClick={() => handleRowClick(item)}>
+          {columns.map((column) => (
+            <td key={createKey(item, column)}>{renderCell(item, column)}</td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  );
+};
 
 export default TableBody;
