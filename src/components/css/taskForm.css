@@ -1,8 +1,8 @@
-#taskDetails {
+#taskForm {
   padding: 10px;
 }
 
-#taskDetailsContent {
+#taskFormContent {
   background-color: rgb(37, 37, 37);
   margin: 25px auto;
   padding: 10px;
@@ -11,7 +11,7 @@
   width: 50%;
 }
 
-#taskDetailsContent .btn {
+#taskFormContent .btn {
   background-color: rgb(0, 78, 109);
   color: white;
 }

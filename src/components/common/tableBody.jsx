@@ -17,7 +17,7 @@ const TableBody = (props) => {
   const history = useHistory();
 
   const handleRowClick = (item) => {
-    history.push(`/${routeBase}/${item._id}/${item.title}`);
+    history.push(`/${routeBase}/${item._id}`);
   };
 
   return (

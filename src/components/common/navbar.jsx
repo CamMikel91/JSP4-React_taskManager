@@ -21,6 +21,11 @@ const NavBar = () => {
           Login
         </Link>
       </li>
+      <li class="nav-item">
+        <Link to={"/users/register"} class="nav-link">
+          Register
+        </Link>
+      </li>
     </ul>
   );
 };

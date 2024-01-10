@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import _ from "lodash";
 import ControlPanel from "./controlPanel";
 import TaskTable from "./taskTable";
@@ -145,6 +146,9 @@ class TaskList extends Component {
         <div className="col-9">
           <div className="taskManager">
             <h1 className="text-center">Task Manager</h1>
+            <Link to={"/tasks/new"} className="btn btn-info my-3">
+              Add Task
+            </Link>
             <TaskTable
               tasks={tasks}
               sortColumn={sortColumn}
