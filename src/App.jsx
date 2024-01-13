@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
-import { getTasks } from "./fakeTaskService-1";
 import NavBar from "./components/common/navbar";
 import Home from "./components/home";
+import { getTasks } from "./fakeTasks/fakeTaskService";
+import { getGenres } from "./fakeTasks/fakeGenreService";
 import TaskList from "./components/taskList";
 import TaskForm from "./components/taskForm";
 import NotFound from "./components/notFound";
@@ -15,34 +16,40 @@ import "./App.css";
 
 class App extends Component {
   state = {
-    tasks: [],
+    tasks: getTasks(),
+    genres: getGenres(),
   };
 
-  componentDidMount() {
-    this.setState({ tasks: getTasks() });
-  }
+  handleTaskUpdate = (task) => {
+    const tasks = this.state.tasks;
+    const updatedTask = task;
+    const index = tasks.indexOf(tasks.find((t) => t._id === task._id));
+    tasks[index] = updatedTask;
+    this.setState({ tasks });
+  };
 
+  // handle new task creation
+  handleNewTask = (task) => {
+    const tasks = [...this.state.tasks, task];
+    this.setState({ tasks });
+  };
+
+  // handle task completion toggle
   handleComplete = (task) => {
-    const tasks = [...this.state.tasks];
-    const index = tasks.indexOf(task);
-    tasks[index] = { ...tasks[index] };
+    const tasks = this.state.tasks;
+    const index = tasks.indexOf(tasks.find((t) => t._id === task._id));
     tasks[index].completed = !tasks[index].completed;
     this.setState({ tasks });
   };
 
-  handleSaveTask = (task) => {
-    const tasks = [...this.state.tasks];
-    const index = tasks.indexOf(task);
-    tasks[index] = { ...tasks[index] };
-    tasks[index].title = task.title;
-    tasks[index].task = task.task;
-    tasks[index].category = task.category;
-    tasks[index].severity = task.severity;
-    tasks[index].completed = task.completed;
+  // handle task deletion
+  handleTaskDelete = (task) => {
+    const tasks = this.state.tasks.filter((t) => t._id !== task._id);
     this.setState({ tasks });
   };
 
   render() {
+    const { tasks, genres } = this.state;
     return (
       <div>
         <NavBar />
@@ -52,19 +59,22 @@ class App extends Component {
               path={"/tasks/:_id"}
               render={(props) => (
                 <TaskForm
-                  tasks={this.state.tasks}
-                  onSaveTask={this.handleSaveTask}
                   {...props}
+                  tasks={tasks}
+                  genres={genres}
+                  onTaskUpdate={this.handleTaskUpdate}
+                  onNewTask={this.handleNewTask}
                 />
               )}
             />
             <Route
               path="/tasks"
-              render={(props) => (
+              render={() => (
                 <TaskList
-                  tasks={this.state.tasks}
-                  onCompleted={this.handleComplete}
-                  {...props}
+                  tasks={tasks}
+                  genres={genres}
+                  onTaskComplete={this.handleComplete}
+                  onTaskDelete={this.handleTaskDelete}
                 />
               )}
             />

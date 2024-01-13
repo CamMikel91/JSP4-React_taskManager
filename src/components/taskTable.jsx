@@ -17,9 +17,26 @@ class TaskTable extends Component {
           completed={task.completed}
           onClick={(e) => {
             e.stopPropagation();
-            this.props.onCompleted(task);
+            this.props.onTaskComplete(task);
           }}
         />
+      ),
+    },
+    {
+      key: "delete",
+      path: "delete",
+      label: "",
+      content: (task) => (
+        <button
+          className="btn btn-danger btn-sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            this.props.onTaskDelete(task);
+            this.props.onDelete(task);
+          }}
+        >
+          Delete
+        </button>
       ),
     },
   ];

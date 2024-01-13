@@ -2,20 +2,19 @@ import React from "react";
 import Joi from "joi-browser";
 import Form from "./common/form";
 import "./css/taskForm.css";
-import { getTask, saveTask, getSeverities } from "../fakeTaskService-1";
 
 class TaskForm extends Form {
   state = {
     data: {
-      _id: "",
       title: "",
       task: "",
       category: "",
-      severity: { _id: "", name: "" },
-      completed: "",
+      severity: "",
+      completed: false,
     },
+    formType: "",
     errors: {},
-    severities: [],
+    genres: this.props.genres,
     completedOptions: [
       { _id: "true", name: "Complete" },
       { _id: "false", name: "Incomplete" },
@@ -27,21 +26,26 @@ class TaskForm extends Form {
     title: Joi.string().min(3).max(100).required(),
     task: Joi.string().min(3).max(100).required(),
     category: Joi.string().min(3).max(100).required(),
-    severity: Joi.string().min(3).max(100).required(),
+    severity: Joi.string().required(),
     completed: Joi.boolean().required(),
   };
 
   componentDidMount() {
+    let tasks = this.props.tasks;
     const taskId = this.props.match.params._id;
-    if (taskId === "new") return;
 
-    const task = getTask(taskId);
-    if (!task) return this.props.history.replace("/not-found");
-    // console.log(task);
+    // check for new task
+    if (taskId === "new") {
+      this.setState({ formType: "new" });
+      return;
+    } else {
+      // check for existing task
+      this.setState({ formType: "update" });
+      const task = tasks.find((t) => t._id === taskId);
+      if (!task) return this.props.history.replace("/not-found");
 
-    const severities = getSeverities();
-    // console.log(severities);
-    this.setState({ data: this.mapToViewModel(task), severities });
+      this.setState({ data: this.mapToViewModel(task) });
+    }
   }
 
   mapToViewModel(task) {
@@ -50,30 +54,54 @@ class TaskForm extends Form {
       title: task.title,
       task: task.task,
       category: task.category,
-      severity: task.severity.name,
+      severity: task.severity._id,
       completed: task.completed,
     };
   }
 
   doSubmit = () => {
-    // Call the server - Called when save button is clicked in form
-    saveTask(this.state.data);
-    console.log(`Submitted`);
-    // console.log(this.state.data);
-    // this.props.history.push("/tasks");
+    // if new task, create new task
+    if (this.state.formType === "new") {
+      const newTask = {
+        _id: Date.now().toString(),
+        title: this.state.data.title,
+        task: this.state.data.task,
+        category: this.state.data.category,
+        severity: this.state.genres.find(
+          (genre) => genre._id === this.state.data.severity
+        ),
+        completed: false,
+      };
+      this.props.onNewTask(newTask);
+      this.props.history.push("/tasks");
+      return;
+    } else {
+      const updatedTask = {
+        _id: this.state.data._id,
+        title: this.state.data.title,
+        task: this.state.data.task,
+        category: this.state.data.category,
+        severity: this.state.genres.find(
+          (genre) => genre._id === this.state.data.severity
+        ),
+        completed: this.state.data.completed || false,
+      };
+
+      this.props.onTaskUpdate(updatedTask);
+      this.props.history.push("/tasks");
+    }
   };
 
   render() {
-    const { severities, completedOptions } = this.state;
+    const { genres } = this.state;
     return (
-      <div id="TaskForm">
+      <div id="taskForm">
         <h1>Task Details</h1>
         <form onSubmit={this.handleSubmit} className="container">
           {this.renderInput("title", "Title")}
           {this.renderInput("task", "Task")}
           {this.renderInput("category", "Category")}
-          {this.renderSelect("severity", "Severity", severities)}
-          {this.renderSelect("completed", "Completed", completedOptions)}
+          {this.renderSelect("severity", "Severity", genres)}
           {this.renderButton("Save")}
         </form>
       </div>

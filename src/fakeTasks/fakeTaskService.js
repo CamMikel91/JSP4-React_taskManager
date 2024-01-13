@@ -161,20 +161,6 @@ const tasks = [
   },
 ];
 
-const severities = [
-  { _id: "61b017eb0cce782d386e7371", name: "Very Important" },
-  { _id: "61b017cc0cce782d386e7370", name: "Important" },
-  { _id: "61b017a20cce782d386e736f", name: "Normal" },
-];
-
-export function getSeverities() {
-  return severities.filter((s) => s);
-}
-
-export function getSeverity(id) {
-  return severities.find((s) => s._id === id);
-}
-
 export function getTasks() {
   return tasks;
 }
@@ -195,7 +181,6 @@ export function saveTask(task) {
     taskInDb._id = Date.now().toString();
     tasks.push(taskInDb);
   }
-  // console.log(taskInDb);
   return taskInDb;
 }
 

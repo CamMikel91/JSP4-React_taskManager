@@ -1,6 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import { useHistory } from "react-router-dom";
+import "./css/tableBody.css";
 
 const TableBody = (props) => {
   const { data, columns, routeBase } = props;

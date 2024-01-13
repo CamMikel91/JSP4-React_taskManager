@@ -2,16 +2,8 @@
   padding: 10px;
 }
 
-#taskFormContent {
-  background-color: rgb(37, 37, 37);
-  margin: 25px auto;
-  padding: 10px;
-  border: 1px solid white;
-  border-radius: 25px;
-  width: 50%;
-}
-
-#taskFormContent .btn {
-  background-color: rgb(0, 78, 109);
-  color: white;
+#taskForm form {
+  width: 400px;
+  margin: 0 auto;
+  padding: 15px;
 }
