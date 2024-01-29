@@ -1,5 +1,11 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import {
+  getTasks,
+  getGenres,
+  updateTask,
+  deleteTask,
+} from "../services/taskService";
 import _ from "lodash";
 import ControlPanel from "./controlPanel";
 import TaskTable from "./taskTable";
@@ -9,8 +15,8 @@ import "./css/taskList.css";
 
 class TaskList extends Component {
   state = {
-    tasks: this.props.tasks,
-    genres: this.props.genres,
+    tasks: [],
+    genres: [],
     pageSize: 5,
     currentPage: 1,
     filters: {
@@ -21,6 +27,72 @@ class TaskList extends Component {
     sortColumn: { path: "title", order: "asc" },
   };
 
+  async componentDidMount() {
+    const tasks = await getTasks();
+    const genres = await getGenres();
+    this.setState({ tasks, genres });
+  }
+
+  // handler for changing pages
+  handlePageChange = (page) => {
+    this.setState({ currentPage: page });
+  };
+
+  // handler for sorting tasks
+  handleSort = (sortColumn) => {
+    this.setState({ sortColumn });
+  };
+
+  // handler for creating new tasks
+  handleNewTask = (task) => {
+    const tasks = [...this.state.tasks, task];
+    this.setState({ tasks });
+  };
+
+  // handler for updating tasks
+  handleUpdate = (task) => {
+    const tasks = [...this.state.tasks];
+    const index = tasks.indexOf(tasks.find((t) => t._id === task._id));
+    tasks[index] = task;
+    this.setState({ tasks });
+  };
+
+  // handler for deleting tasks
+  handleDelete = (task) => {
+    const originalTasks = this.state.tasks;
+    const tasks = this.state.tasks.filter((t) => t._id !== task._id);
+    this.setState({ tasks });
+
+    // delete task from database
+    try {
+      deleteTask(task);
+    } catch (ex) {
+      if (ex.response) {
+        alert("An error occurred while deleting the task.");
+        this.setState({ tasks: originalTasks });
+      }
+    }
+  };
+
+  // handle task completion toggle
+  handleComplete = (task) => {
+    const originalTasks = this.state.tasks;
+    const tasks = this.state.tasks;
+    const index = tasks.indexOf(tasks.find((t) => t._id === task._id));
+    tasks[index].completed = !tasks[index].completed;
+    this.setState({ tasks });
+
+    // update task in database
+    try {
+      updateTask(task);
+    } catch (ex) {
+      if (ex.response) {
+        alert("An error occurred while updating the task.");
+        this.setState({ tasks: originalTasks });
+      }
+    }
+  };
+
   // handler for filtering tasks
   handleFilter = (filter) => {
     const filters = { ...this.state.filters };
@@ -28,26 +100,18 @@ class TaskList extends Component {
     this.setState({ filters, currentPage: 1 });
   };
 
-  // handler for changing pages
-  handlePageChange = (page) => {
-    this.setState({ currentPage: page });
-  };
-
-  handleSort = (sortColumn) => {
-    this.setState({ sortColumn });
-  };
-
-  // handler for deleting tasks
-  handleDelete = (task) => {
-    const tasks = this.state.tasks.filter((t) => t._id !== task._id);
-    this.setState({ tasks });
+  // helper function for getting genre name
+  getGenreName = (task) => {
+    const genre = this.state.genres.find((g) => g._id === task.severity);
+    return genre.name;
   };
 
   render() {
-    const { pageSize, currentPage, sortColumn, tasks } = this.state;
+    const { pageSize, currentPage, sortColumn, tasks, genres } = this.state;
 
     // filter tasks by status, severity, and category
     const filtered = tasks.filter((task) => {
+      console.log(genres);
       if (this.state.filters.status === "all") {
         if (this.state.filters.severity === "all") {
           if (this.state.filters.category === "all") return task;
@@ -55,11 +119,12 @@ class TaskList extends Component {
           return null;
         } else {
           if (this.state.filters.category === "all") {
-            if (this.state.filters.severity === task.severity.name) return task;
+            if (this.state.filters.severity === this.getGenreName(task))
+              return task;
             return null;
           } else {
             if (
-              this.state.filters.severity === task.severity.name &&
+              this.state.filters.severity === this.getGenreName(task) &&
               this.state.filters.category === task.category
             )
               return task;
@@ -88,12 +153,12 @@ class TaskList extends Component {
         } else {
           if (this.state.filters.category === "all") {
             if (this.state.filters.status === "incomplete" && !task.completed) {
-              if (this.state.filters.severity === task.severity.name)
+              if (this.state.filters.severity === this.getGenreName(task))
                 return task;
               return null;
             }
             if (this.state.filters.status === "complete" && task.completed) {
-              if (this.state.filters.severity === task.severity.name)
+              if (this.state.filters.severity === this.getGenreName(task))
                 return task;
               return null;
             }
@@ -102,14 +167,14 @@ class TaskList extends Component {
             if (
               this.state.filters.status === "incomplete" &&
               !task.completed &&
-              this.state.filters.severity === task.severity.name &&
+              this.state.filters.severity === this.getGenreName(task) &&
               this.state.filters.category === task.category
             )
               return task;
             if (
               this.state.filters.status === "complete" &&
               task.completed &&
-              this.state.filters.severity === task.severity.name &&
+              this.state.filters.severity === this.getGenreName(task) &&
               this.state.filters.category === task.category
             )
               return task;
@@ -160,11 +225,12 @@ class TaskList extends Component {
               Add Task
             </Link>
             <TaskTable
+              genres={this.state.genres}
               tasks={tasksPaginated}
               sortColumn={sortColumn}
               onSort={this.handleSort}
-              onTaskComplete={this.props.onTaskComplete}
-              onTaskDelete={this.props.onTaskDelete}
+              onTaskComplete={this.handleComplete}
+              onTaskDelete={this.handleDelete}
               onDelete={this.handleDelete}
             />
             <Pagination

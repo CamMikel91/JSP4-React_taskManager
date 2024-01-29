@@ -1,6 +1,13 @@
 import React from "react";
 import Joi from "joi-browser";
 import Form from "./common/form";
+import {
+  getGenres,
+  getTask,
+  // getTasks,
+  updateTask,
+  createTask,
+} from "../services/taskService";
 import "./css/taskForm.css";
 
 class TaskForm extends Form {
@@ -14,7 +21,8 @@ class TaskForm extends Form {
     },
     formType: "",
     errors: {},
-    genres: this.props.genres,
+    genres: [],
+    // tasks: [],
     completedOptions: [
       { _id: "true", name: "Complete" },
       { _id: "false", name: "Incomplete" },
@@ -30,8 +38,10 @@ class TaskForm extends Form {
     completed: Joi.boolean().required(),
   };
 
-  componentDidMount() {
-    let tasks = this.props.tasks;
+  async componentDidMount() {
+    // let tasks = await getTasks();
+    const genres = await getGenres();
+    this.setState({ genres });
     const taskId = this.props.match.params._id;
 
     // check for new task
@@ -41,7 +51,8 @@ class TaskForm extends Form {
     } else {
       // check for existing task
       this.setState({ formType: "update" });
-      const task = tasks.find((t) => t._id === taskId);
+      const task = await getTask(taskId);
+      console.log(task);
       if (!task) return this.props.history.replace("/not-found");
 
       this.setState({ data: this.mapToViewModel(task) });
@@ -54,41 +65,62 @@ class TaskForm extends Form {
       title: task.title,
       task: task.task,
       category: task.category,
-      severity: task.severity._id,
+      severity: task.severity,
       completed: task.completed,
     };
   }
+  // handler for creating new task
+  handleNewTask = async () => {
+    const newTask = {
+      title: this.state.data.title,
+      task: this.state.data.task,
+      category: this.state.data.category,
+      severity: this.state.data.severity,
+      completed: false,
+    };
+    try {
+      await createTask(newTask);
+      this.props.history.push("/tasks");
+    } catch (ex) {
+      if (ex.response) {
+        const errors = { ...this.state.errors };
+        errors.title = ex.response.data;
+        this.setState({ errors });
+      }
+      alert("An error occurred while creating the task.");
+    }
+  };
+
+  // handler for updating task
+  handleTaskUpdate = async (task) => {
+    const updatedTask = {
+      _id: this.state.data._id,
+      title: this.state.data.title,
+      task: this.state.data.task,
+      category: this.state.data.category,
+      severity: this.state.data.severity,
+      completed: this.state.data.completed || false,
+    };
+    try {
+      await updateTask(updatedTask);
+      this.props.history.push("/tasks");
+    } catch (ex) {
+      if (ex.response) {
+        const errors = { ...this.state.errors };
+        errors.title = ex.response.data;
+        this.setState({ errors });
+      }
+      alert("An error occurred while updating the task.");
+    }
+  };
 
   doSubmit = () => {
     // if new task, create new task
     if (this.state.formType === "new") {
-      const newTask = {
-        _id: Date.now().toString(),
-        title: this.state.data.title,
-        task: this.state.data.task,
-        category: this.state.data.category,
-        severity: this.state.genres.find(
-          (genre) => genre._id === this.state.data.severity
-        ),
-        completed: false,
-      };
-      this.props.onNewTask(newTask);
-      this.props.history.push("/tasks");
-      return;
+      this.handleNewTask();
     } else {
-      const updatedTask = {
-        _id: this.state.data._id,
-        title: this.state.data.title,
-        task: this.state.data.task,
-        category: this.state.data.category,
-        severity: this.state.genres.find(
-          (genre) => genre._id === this.state.data.severity
-        ),
-        completed: this.state.data.completed || false,
-      };
-
-      this.props.onTaskUpdate(updatedTask);
-      this.props.history.push("/tasks");
+      // if existing task, update task
+      this.handleTaskUpdate();
     }
   };
 

@@ -1,6 +1,7 @@
 import React from "react";
 import Joi from "joi-browser";
 import Form from "../common/form";
+import { registerUser } from "../../services/userService";
 import "../css/register.css";
 
 class RegisterForm extends Form {
@@ -19,9 +20,20 @@ class RegisterForm extends Form {
     password: Joi.string().min(5).max(50).required(),
   };
 
-  doSubmit = () => {
-    // Call the server
-    console.log(`Submitted`);
+  doSubmit = async () => {
+    const user = this.state.data;
+    try {
+      await registerUser(user);
+      console.log(user.name + " has been registered successfully!");
+      window.location = "/login";
+    } catch (ex) {
+      if (ex.response && ex.response.status === 400) {
+        const errors = { ...this.state.errors };
+        errors.email = ex.response.data;
+        this.setState({ errors });
+        return this.state.errors;
+      }
+    }
   };
 
   render() {

@@ -7,7 +7,15 @@ class TaskTable extends Component {
     { path: "title", label: "Title" },
     { path: "task", label: "Task" },
     { path: "category", label: "Category" },
-    { path: "severity.name", label: "Severity" },
+    {
+      path: "severity",
+      label: "Severity",
+      content: (task) => {
+        const severityId = task.severity;
+        const genre = this.props.genres.find((g) => g._id === severityId);
+        return genre.name;
+      },
+    },
     {
       key: "completed",
       path: "completed",
