@@ -1,7 +1,7 @@
 import React from "react";
 import Joi from "joi-browser";
 import Form from "./common/form";
-import TestingArea from "./testingArea";
+import { login } from "../services/authService";
 import "./css/login.css";
 
 class Login extends Form {
@@ -15,9 +15,19 @@ class Login extends Form {
     password: Joi.string().min(5).max(50).required(),
   };
 
-  doSubmit = () => {
-    // Call the server
-    console.log(`Submitted`);
+  doSubmit = async () => {
+    try {
+      const { data } = this.state;
+      const { data: jwt } = await login(data.email, data.password);
+      localStorage.setItem("token", jwt);
+      window.location = "/";
+    } catch (ex) {
+      if (ex.response && ex.response.status === 400) {
+        const errors = { ...this.state.errors };
+        errors.email = ex.response.data;
+        this.setState({ errors });
+      }
+    }
   };
 
   render() {
@@ -29,7 +39,6 @@ class Login extends Form {
           {this.renderInput("password", "Password", "password")}
           {this.renderButton("Login")}
         </form>
-        <TestingArea />
       </div>
     );
   }

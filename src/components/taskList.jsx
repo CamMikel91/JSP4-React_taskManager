@@ -107,11 +107,10 @@ class TaskList extends Component {
   };
 
   render() {
-    const { pageSize, currentPage, sortColumn, tasks, genres } = this.state;
+    const { pageSize, currentPage, sortColumn, tasks } = this.state;
 
     // filter tasks by status, severity, and category
     const filtered = tasks.filter((task) => {
-      console.log(genres);
       if (this.state.filters.status === "all") {
         if (this.state.filters.severity === "all") {
           if (this.state.filters.category === "all") return task;
